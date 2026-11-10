@@ -6,6 +6,18 @@ It adapts real collection and source-verification code into one generated-record
 
 No accounts, credentials, provider data, model, dependency installation or background service are needed. The MCP-shaped wrapper is an **in-process mock**, not a protocol server or authentication system.
 
+## 80-second walkthrough
+
+[**Watch or download the captioned walkthrough (MP4)**](docs/walkthrough/walkthrough.mp4)
+
+[![Walkthrough preview](docs/walkthrough/poster.png)](docs/walkthrough/walkthrough.mp4)
+
+Watch the request-to-landing verification, no-overwrite variants and identity/tamper rejection.
+
+[Transcript](docs/walkthrough/transcript.txt) · [Captions](docs/walkthrough/captions.srt) · [Reproduce the recorded behavior](docs/walkthrough/reproduce.sh) · [Context and source revision](docs/walkthrough/README.md)
+
+The video presents recorded output from synthetic fixtures, with neutral synthetic narration. Its pinned source revision is recorded alongside the video.
+
 ## Run it
 
 Python 3.11+ is the code target, on macOS/Linux filesystems supporting the required directory descriptors, no-follow/nonblocking opens, hard links and fsync. Unsupported primitives fail; there is no overwrite fallback. CI records the actual Python versions on standard Linux and macOS runners. No Windows support is claimed.

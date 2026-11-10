@@ -1,0 +1,233 @@
+{
+  "source_repository": "https://github.com/wolffrichardj/verified-artifact-collection",
+  "source_revision": "df5efa8c1cc118a12746e69e05c9537317c577dc",
+  "recorded_date": "2026-11-10",
+  "method": "Presentation of recorded local output; selected/reflowed JSON fields, source excerpts and labeled explanatory diagrams.",
+  "synthetic_narrator": "macOS Samantha",
+  "shots": [
+    {
+      "scene": 0,
+      "start": 0,
+      "end": 10,
+      "title": "Did the right record land?",
+      "label": "Boundary diagram",
+      "lines": [
+        "A completed task can hide a wrong record.",
+        "REQUEST  \u2192  VERIFY  \u2192  LAND  \u2192  REOPEN",
+        "Check identity before publishing bytes."
+      ],
+      "note": "Engineering payoff: refuse early, preserve evidence."
+    },
+    {
+      "scene": 1,
+      "start": 10,
+      "end": 21,
+      "title": "Verify before publication",
+      "label": "Source expression + mechanism schematic",
+      "lines": [
+        "response.body != fixture_bytes(self.request)",
+        "transport.execute  \u2192  verifier.verify  \u2192  sink.land",
+        "Exact request + exact generated content",
+        "os.link: publish without replacing an existing name"
+      ],
+      "note": "runtime.py:41,140 \u00b7 sample.py:collect \u00b7 ordering diagram"
+    },
+    {
+      "scene": 2,
+      "start": 21,
+      "end": 32,
+      "title": "Success has separate evidence",
+      "label": "Recorded JSON \u00b7 selected fields",
+      "lines": [
+        "$ python3 -B sample.py --root \"$records\" --scenario happy",
+        "\"domain_ok\": true",
+        "\"disposition\": \"created\"",
+        "\"readback_verified\": true",
+        "\"physical_verified\": true",
+        "exit: 0"
+      ],
+      "note": "Final disk readback + separate read-only reopening"
+    },
+    {
+      "scene": 3,
+      "start": 32,
+      "end": 45,
+      "title": "Keep both versions",
+      "label": "Recorded results + digest snapshot comparison",
+      "lines": [
+        "--scenario happy    \u2192  \"duplicate\"",
+        "--scenario revised  \u2192  \"variant\"",
+        "Original content unchanged: full SHA-256 compared",
+        "Two files retained with distinct content",
+        "Changed bytes receive a full-hash variant filename"
+      ],
+      "note": "runtime.py:FileSystemSink \u00b7 commands abbreviated; see reproduce.sh"
+    },
+    {
+      "scene": 4,
+      "start": 45,
+      "end": 54,
+      "title": "Reject a mismatched identity",
+      "label": "Recorded JSON + unchanged inventory",
+      "lines": [
+        "$ python3 -B sample.py --root \"$records\"",
+        "    --scenario wrong-identity",
+        "\"domain_ok\": false",
+        "\"error\": \"collection_rejected\"",
+        "exit: 1",
+        "Retained files + full digests: unchanged"
+      ],
+      "note": "Rejection occurs before the sink publishes."
+    },
+    {
+      "scene": 5,
+      "start": 54,
+      "end": 64,
+      "title": "Changed bytes are detected",
+      "label": "Recorded JSON + physical verifier source cue",
+      "lines": [
+        "--scenario tampered-source",
+        "\"domain_ok\": false",
+        "\"error\": \"tamper_rejected\"",
+        "exit: 1",
+        "if digest.hexdigest() != content_identity:",
+        "    raise ValueError('Source hash mismatch')"
+      ],
+      "note": "source_identity.py:48\u201349 \u00b7 isolated temporary artifact only"
+    },
+    {
+      "scene": 6,
+      "start": 64,
+      "end": 73,
+      "title": "Know the trust boundary",
+      "label": "Scope and practical limit",
+      "lines": [
+        "mock_mcp.py: in-process mock",
+        "No real MCP server or provider authentication",
+        "Hashes check observed byte consistency",
+        "Trusted user-owned root; POSIX filesystem required"
+      ],
+      "note": "No live agent, authenticated portal or future-integrity claim."
+    },
+    {
+      "scene": 7,
+      "start": 73,
+      "end": 80,
+      "title": "Inspect the boundary yourself",
+      "label": "Public source + attribution",
+      "lines": [
+        "Richard Wolff: selected personal-system source",
+        "Adaptation and hardening used AI assistance",
+        "github.com/wolffrichardj/verified-artifact-collection",
+        "Revision df5efa8c1cc1\u2026  \u00b7  README + PROVENANCE.md",
+        "Start with sample.py \u2192 runtime.py \u2192 source_identity.py"
+      ],
+      "note": "Reproduce the same scenarios with the accompanying script."
+    }
+  ],
+  "runs": [
+    {
+      "label": "created",
+      "scenario": "happy",
+      "exit": 0,
+      "stdout": {
+        "domain_ok": true,
+        "landing": {
+          "destination": "statement-0001.txt",
+          "disposition": "created",
+          "landed": true,
+          "readback_verified": true,
+          "sha256": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733",
+          "size": 138
+        },
+        "physical_verified": true,
+        "record_id": "statement-0001"
+      },
+      "stderr": "",
+      "recorded_utc": "2026-11-10T21:00:08.515460+00:00"
+    },
+    {
+      "label": "duplicate",
+      "scenario": "happy",
+      "exit": 0,
+      "stdout": {
+        "domain_ok": true,
+        "landing": {
+          "destination": "statement-0001.txt",
+          "disposition": "duplicate",
+          "landed": true,
+          "readback_verified": true,
+          "sha256": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733",
+          "size": 138
+        },
+        "physical_verified": true,
+        "record_id": "statement-0001"
+      },
+      "stderr": "",
+      "recorded_utc": "2026-11-10T21:00:08.584186+00:00"
+    },
+    {
+      "label": "variant",
+      "scenario": "revised",
+      "exit": 0,
+      "stdout": {
+        "domain_ok": true,
+        "landing": {
+          "destination": "statement-0001__variant-a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16.txt",
+          "disposition": "variant",
+          "landed": true,
+          "readback_verified": true,
+          "sha256": "a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16",
+          "size": 138
+        },
+        "physical_verified": true,
+        "record_id": "statement-0001"
+      },
+      "stderr": "",
+      "recorded_utc": "2026-11-10T21:00:08.651370+00:00"
+    },
+    {
+      "label": "identity-rejected",
+      "scenario": "wrong-identity",
+      "exit": 1,
+      "stdout": {
+        "domain_ok": false,
+        "error": "collection_rejected"
+      },
+      "stderr": "",
+      "recorded_utc": "2026-11-10T21:00:08.719525+00:00"
+    },
+    {
+      "label": "tamper-rejected",
+      "scenario": "tampered-source",
+      "exit": 1,
+      "stdout": {
+        "domain_ok": false,
+        "error": "tamper_rejected"
+      },
+      "stderr": "",
+      "recorded_utc": "2026-11-10T21:00:08.784838+00:00"
+    }
+  ],
+  "snapshots": {
+    "created": {
+      "statement-0001.txt": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733"
+    },
+    "duplicate": {
+      "statement-0001.txt": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733"
+    },
+    "variant": {
+      "statement-0001.txt": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733",
+      "statement-0001__variant-a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16.txt": "a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16"
+    },
+    "identity-rejected": {
+      "statement-0001.txt": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733",
+      "statement-0001__variant-a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16.txt": "a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16"
+    },
+    "tamper-rejected": {
+      "statement-0001.txt": "3e440528685d2ebc76365f8ad54ecc9a76973813ea49db30a2f0eeb51c01d733",
+      "statement-0001__variant-a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16.txt": "a2d5d27cac46582751cb4e6b22e08b5b973a602fcb62785084874bbac14e8f16"
+    }
+  },
+  "assertions": "passed; original unchanged, two distinct contents retained, rejection inventories unchanged"
+}

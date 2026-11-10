@@ -1,0 +1,16 @@
+{
+  "revision": "df5efa8c1cc118a12746e69e05c9537317c577dc",
+  "dirty_status": "",
+  "files": {
+    ".github/workflows/check.yml": "4edc6a3532b5559dde558813222a509ea58f36c04de1a083cfb8c34f25bb5941",
+    ".gitignore": "fa5b2d4433b835933b22140e01833a4972a0ee8532d76951286e3dd071994af0",
+    "LICENSE": "0a0fea0df905048187de2abfbabef7a48d396f226a6edcfd560c7405da417681",
+    "PROVENANCE.md": "a58db0d812f3f04b6a3b9d917417c0cc7660728b9add6249c0426382f07ae364",
+    "README.md": "7b94032bd2602622284aa5374f0a9ede801866bd5011a320e0a9c87e6765528f",
+    "mock_mcp.py": "20d2e94c0ef43261fec95fb44e29a6a04fa90b4c9bf930d867b706d0728f55b7",
+    "runtime.py": "c84e1021f39a65deba0abbe521e4d7dd1bb22f784302525e71674cf48a3e4ad9",
+    "sample.py": "c416c748baeb2479ae9701ed8c1bd8f919a0f8905d4d942705a627789efeb7b3",
+    "source_identity.py": "889b98f01d969c75c8a7e76ec7f7f8b614fc746c12b13a7457c5cef02655b591",
+    "test_sample.py": "cd1d78b67f97197d1b175597e46ccdbaef862863c58003105ca2e0bd666d6463"
+  }
+}

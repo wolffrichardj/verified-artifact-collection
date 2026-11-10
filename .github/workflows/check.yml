@@ -1,0 +1,32 @@
+name: Offline sample
+on:
+  push:
+    branches: [release]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Runtime and contracts
+        run: |
+          python3 --version
+          python3 -B -m unittest discover -s . -p 'test_sample.py' -v
+      - name: Actual CLI walkthrough
+        shell: bash
+        run: |
+          demo_root=$(mktemp -d)
+          python3 -B sample.py --root "$demo_root" --scenario happy
+          python3 -B sample.py --root "$demo_root" --scenario happy
+          python3 -B sample.py --root "$demo_root" --scenario revised
+          if python3 -B sample.py --root "$demo_root" --scenario wrong-identity; then exit 1; fi
+          if python3 -B sample.py --root "$demo_root" --scenario tampered-source; then exit 1; fi

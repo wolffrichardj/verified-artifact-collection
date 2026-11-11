@@ -8,9 +8,9 @@ No accounts, credentials, provider data, model, dependency installation or backg
 
 ## 80-second walkthrough
 
-[**Watch or download the captioned walkthrough (MP4)**](docs/walkthrough/walkthrough.mp4)
+https://github.com/user-attachments/assets/b3ca3bdc-afdf-40e1-9eec-c17af56e9fb0
 
-[![Walkthrough preview](docs/walkthrough/poster.png)](docs/walkthrough/walkthrough.mp4)
+[**Watch or download the captioned walkthrough (MP4)**](docs/walkthrough/walkthrough.mp4)
 
 Watch the request-to-landing verification, no-overwrite variants and identity/tamper rejection.
 

@@ -1,26 +1,22 @@
 # Verified Artifact Collection
 
-An agent completing a portal action does not prove that the right document arrived or that its bytes landed safely. This small offline sample makes those separate outcomes visible.
+[Richard Wolff](https://github.com/wolffrichardj) · [Portfolio & case studies](https://richardwolff.me/) · [LinkedIn](https://www.linkedin.com/in/wolffrichardj)
 
-It adapts real collection and source-verification code into one generated-record walkthrough. Request-bound identity and bytes are checked before writing. Landing preserves different content as a hash-named variant, verifies final disk readback, and reports uncertainty after a publication failure. A separate read-only consumer detects later tampering.
+[![verified-artifact-collection CI](https://github.com/wolffrichardj/verified-artifact-collection/actions/workflows/check.yml/badge.svg?branch=release)](https://github.com/wolffrichardj/verified-artifact-collection/actions/workflows/check.yml) · [Run the example](#run-the-example) · [Watch the walkthrough](#80-second-walkthrough) · [Scope & lineage](#scope-and-lineage)
 
-No accounts, credentials, provider data, model, dependency installation or background service are needed. The MCP-shaped wrapper is an **in-process mock**, not a protocol server or authentication system.
+**A completed tool call is not enough evidence that the right document was collected.** This small Python sample checks a fixed synthetic request, lands its bytes without overwriting existing content, and independently reopens the stored file before reporting success.
 
-## 80-second walkthrough
+The concrete example is `statement-0001` for `demo_subject_01`, period `2026-01`. Collect version 1 twice, then version 2: the receipts report `created`, `duplicate`, then `variant`. A wrong subject refuses before landing; later byte tampering fails physical verification.
 
-https://github.com/user-attachments/assets/b3ca3bdc-afdf-40e1-9eec-c17af56e9fb0
+The engineering choice is to keep transport, content verification, storage and downstream verification separate. Existing different bytes are retained as a full-SHA-256 variant. If publication occurs but final readback or durability checks fail, the result is `landing_uncertain`, not success or an automatic retry.
 
-[**Watch or download the captioned walkthrough (MP4)**](docs/walkthrough/walkthrough.mp4)
+This is an offline, source-derived sample with generated records. The MCP-shaped wrapper is an **in-process mock**, not a protocol server or authentication system. No accounts, credentials, provider data, model, dependency installation or background service are needed.
 
-Watch the request-to-landing verification, no-overwrite variants and identity/tamper rejection.
+<a id="run-it"></a>
 
-[Transcript](docs/walkthrough/transcript.txt) · [Captions](docs/walkthrough/captions.srt) · [Reproduce the recorded behavior](docs/walkthrough/reproduce.sh) · [Context and source revision](docs/walkthrough/README.md)
+## Run the example
 
-The video presents recorded output from synthetic fixtures, with neutral synthetic narration. Its pinned source revision is recorded alongside the video.
-
-## Run it
-
-Python 3.11+ is the code target, on macOS/Linux filesystems supporting the required directory descriptors, no-follow/nonblocking opens, hard links and fsync. Unsupported primitives fail; there is no overwrite fallback. CI records the actual Python versions on standard Linux and macOS runners. No Windows support is claimed.
+Python 3.11+ is the code target, on macOS/Linux filesystems supporting directory descriptors, no-follow/nonblocking opens, hard links and fsync. Unsupported primitives fail; there is no overwrite fallback. CI records the actual Python versions on standard Linux and macOS runners. No Windows support is claimed.
 
 ```sh
 git clone https://github.com/wolffrichardj/verified-artifact-collection.git
@@ -32,7 +28,7 @@ python3 -B sample.py --root "$demo_root" --scenario happy
 python3 -B sample.py --root "$demo_root" --scenario revised
 ```
 
-The three JSON receipts report `created`, `duplicate`, then `variant`. The original file remains unchanged; the revised bytes receive a full-SHA-256 variant filename. Receipts contain relative filenames, hashes and sizes, not the document body.
+The original file remains unchanged; revised bytes receive a full-SHA-256 variant filename. Receipts contain relative filenames, hashes and sizes, not the document body.
 
 These demonstrations intentionally exit **1**:
 
@@ -41,27 +37,46 @@ python3 -B sample.py --root "$demo_root" --scenario wrong-identity
 python3 -B sample.py --root "$demo_root" --scenario tampered-source
 ```
 
-Wrong identity refuses before landing. The tamper demonstration collects and changes only its own generated artifact in a nested temporary directory, then reports `tamper_rejected` only after a hash mismatch. It does not modify your existing demo artifacts. The two generated artifacts remain in `$demo_root` for inspection; remove that directory yourself when finished.
+Wrong identity refuses before landing. The tamper scenario collects and changes only its own generated artifact in a nested temporary directory. It reports `tamper_rejected` only after a hash mismatch and does not modify your existing demo artifacts. The two generated version artifacts remain in `$demo_root` for inspection; remove that directory yourself when finished.
 
-## Ownership boundaries
+<a id="80-second-walkthrough"></a>
+
+## Watch the 80-second walkthrough
+
+https://github.com/user-attachments/assets/b3ca3bdc-afdf-40e1-9eec-c17af56e9fb0
+
+[**Watch or download the captioned walkthrough (MP4)**](docs/walkthrough/walkthrough.mp4)
+
+Request-to-landing verification, no-overwrite variants and identity/tamper rejection.
+
+[Transcript](docs/walkthrough/transcript.txt) · [Captions](docs/walkthrough/captions.srt) · [Reproduce the recorded behavior](docs/walkthrough/reproduce.sh) · [Context and source revision](docs/walkthrough/README.md)
+
+This reviewed video presents genuine recorded output from synthetic fixtures, with neutral synthetic narration. It remains pinned to the earlier source revision recorded alongside the video; README changes do not update that historical recording.
+
+<a id="ownership-boundaries"></a>
+
+## Follow the code
 
 ```mermaid
 flowchart LR
   Request[Fixed synthetic request] --> Adapter[In-process mock adapter]
-  Adapter --> Acquire[Acquisition: fake transport and exact verification]
-  Acquire --> Sink[Local sink: no-clobber publication and readback]
-  Sink --> Consumer[Separate consumer: reopen and verify physical source]
+  Adapter --> Acquire[Fake transport and exact verification]
+  Acquire --> Sink[No-clobber publication and final readback]
+  Sink --> Consumer[Separate consumer reopens and hashes the file]
 ```
 
-| File | Responsibility |
+| Entry point | Decision to inspect |
 | --- | --- |
-| [sample.py](sample.py) | Typed collection sequence, one generated fixture, safe CLI walkthrough |
-| [runtime.py](runtime.py) | Request/content equality and filesystem landing |
-| [source_identity.py](source_identity.py) | Read-only path, size and streaming physical SHA-256 verification |
-| [mock_mcp.py](mock_mcp.py) | Scope validation and separate outer-invocation/inner-domain results |
-| [test_sample.py](test_sample.py) | Positive, rejection, collision, concurrent-writer, FIFO, fault and tamper cases |
+| [sample.py](sample.py): `collect`, frozen result types | Transport → verifier → sink ordering; reject incomplete readback evidence |
+| [runtime.py](runtime.py): `SignatureVerifier` | Compare identity and exact generated bytes with the request; metadata attestation alone is insufficient |
+| [runtime.py](runtime.py): `FileSystemSink` | Directory-relative operations, atomic no-clobber hard links, duplicate/variant reconciliation and final readback |
+| [source_identity.py](source_identity.py): `SourceVerifier.verify` | Reopen physical bytes and check size and streaming SHA-256 against expected input values |
+| [mock_mcp.py](mock_mcp.py): `accept_tool_payload` | Require outer invocation success plus complete positive domain, landing and serialized-result evidence |
+| [test_sample.py](test_sample.py) | Positive and rejection cases, collisions, synchronized writer races, FIFO handling, fault injection and later tampering |
 
-The operational source system keeps workflow guidance, acquisition, MCP adaptation and downstream lakehouse/research responsibilities separate. This sample demonstrates the acquisition-to-consumer boundary. It contains no lakehouse transformation, research answers, real provider registry or personal workflow configuration.
+Nonblocking opens precede regular-file checks so a FIFO without a writer cannot hang the reader. Concurrent writers with identical bytes reconcile as duplicates. A losing writer with different bytes advances once to its full-hash variant; different content already occupying that name is an explicit error.
+
+The tests include corrupted final readback, directory-fsync failure after publication and same-size later tampering. A socket/DNS/subprocess tripwire covers the mock end-to-end path; it is not a network sandbox. A post-publication failure preserves the candidate and reports uncertainty; it does not automatically delete the destination or retry. Downstream physical-verification failure separately refuses success.
 
 ## Try the mock tool boundary
 
@@ -79,22 +94,17 @@ with tempfile.TemporaryDirectory() as root:
     print(accept_tool_payload(payload))
 ```
 
-The mock can return outer `ok: true` and `returncode: 0` while the inner domain result refuses. The consumer requires the complete positive domain and landing evidence. These invocation fields simulate an interface; **no process was launched**. Approval and session fields are attestations supplied by trusted sample code, not authenticated principals. A forged, structurally valid receipt is not independently authenticated.
+The mock can return outer `ok: true` and `returncode: 0` while the inner domain result refuses. The consumer requires the complete positive result. These fields simulate an invocation; **no process was launched**. Approval and session fields are attestations supplied by trusted sample code, not authenticated principals. A forged, structurally valid receipt is not independently authenticated.
 
-## Retained behavior and new fixes
+<a id="retained-behavior-and-new-fixes"></a>
+<a id="limits"></a>
 
-Retained source ideas include frozen transport/artifact/result types, transport → verifier → sink ordering, injected collaborators, identical-byte reuse, deterministic content variants, and downstream physical hashing. See [provenance](PROVENANCE.md) for what history was retained.
+## Scope and lineage
 
-The adaptation adds exact request-to-fixture equality, flat sink basenames, directory-relative no-follow operations, atomic hard-link publication instead of replacement, final length/hash readback, and bounded concurrent-writer reconciliation. If another writer wins with the same bytes, the loser reports duplicate. If it wins with different bytes, the loser advances once to its full-hash variant. Different content already occupying that variant is an explicit error.
+The root must be an existing, trusted, user-owned directory; the walkthrough creates a fresh one. Sink paths are flat and generated. Hostile root-ancestor replacement and hostile concurrent mutation are outside scope. Hash agreement proves observed byte consistency, not provider authenticity, future integrity, remote retention or power-loss recovery. Injected transports, verifiers and sinks remain trusted collaborators.
 
-Nonblocking opens precede regular-file checks so a FIFO without a writer cannot hang the reader. A sink failure after publication preserves the candidate and reports `landing_uncertain`; it does not automatically retry or delete the destination. A later consumer-verification failure separately refuses success. These fixes are new here, not claims about every behavior of the original system.
+The operational source separates workflow guidance, acquisition, MCP adaptation and downstream lakehouse/research responsibilities. This sample covers acquisition-to-consumer verification. It includes no live provider session, real provider registry, lakehouse transformation, research answers or personal workflow configuration. It does not establish MCP protocol compatibility, browser authentication, process isolation, live-provider reliability or autonomous agent correctness.
 
-The tests include an actual corrupted final readback, a directory-fsync failure after publication, synchronized writer races and same-size later tampering. One regression test denies socket/DNS/subprocess entry points during the mock end-to-end path. That tripwire is not a network sandbox.
+[PROVENANCE.md](PROVENANCE.md) distinguishes retained typed boundaries, ordering, variants and physical verification from new hardening. Exact request-to-fixture equality, directory-relative no-follow operations, no-clobber publication, final readback and bounded writer reconciliation are additions here, not guarantees attributed to every version of the original system. Two selected historical acquisition snapshots are retained; excluded private context remains private. New work is not backdated.
 
-## Limits
-
-The root must be an existing, trusted, user-owned directory; the walkthrough creates a fresh one. Sink paths are flat and generated. Hostile root-ancestor replacement and hostile concurrent mutation are outside scope. Hash agreement proves observed byte consistency, not provider authenticity, future integrity, remote retention or power-loss recovery.
-
-Injected transports, verifiers and sinks remain trusted collaborators. The mock does not establish actual MCP compatibility, browser authentication, process isolation, live-provider reliability or autonomous agent correctness. Tests and CI report behavior for the tested revision and platform, not universal guarantees or business outcomes.
-
-Richard Wolff's personal system supplied the selected source. The extraction, hardening and review used AI assistance. Commit identity does not establish per-line human authorship. This independent selected sample is [MIT licensed](LICENSE); it does not change the licenses or visibility of any original repository.
+Richard Wolff's personal system supplied the selected source. Extraction, hardening and review used AI assistance; commit identity does not establish per-line human authorship. Tests and CI describe the tested revision and platform, not universal guarantees or business outcomes. This independent sample is [MIT licensed](LICENSE); original repositories retain their licenses and visibility.

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Portable byte manifest; not an exact strict-provenance receipt. Paths are relative to repository root.",
+  "repository": "https://github.com/wolffrichardj/verified-artifact-collection.git",
+  "source_revision": "7a59f67c2f4153adb6e2d52d182b0289e555ac0d",
+  "renderer": {
+    "name": "Archify",
+    "version": "3.2.0",
+    "upstream": "https://github.com/tt-a1i/archify"
+  },
+  "files": {
+    "README.md": {
+      "sha256": "6480c73329ed72d5d5893ae9a52bb7478d05f54fffde3f6c7580771da31001c2",
+      "bytes": 9113
+    },
+    "docs/architecture/README.md": {
+      "sha256": "4f932234bd7bc74b57172831477538891db7e8e0b3ccdbe2ca50289b74d191b7",
+      "bytes": 8480
+    },
+    "docs/architecture/collection.architecture.json": {
+      "sha256": "5ae0e943be98ae02d45c34273a90315949a4ee6bc03969bfe6a14400e56b0d73",
+      "bytes": 5759
+    },
+    "docs/architecture/collection.html": {
+      "sha256": "d6c3a8f6a1474b7fbc5b54b2770cdd11c8f295aa4becbcccaeb14967663b3de2",
+      "bytes": 823752
+    },
+    "docs/architecture/collection.png": {
+      "sha256": "ccff0c261d76cd157da278b3be2849646d10031b0ee4c3d3c82ab5fa751fdd56",
+      "bytes": 690985
+    },
+    "docs/architecture/collection.svg": {
+      "sha256": "ec0e54f532b64e187e0d695d6de9141fbf9b4bc5a4968c2a00463b0e1c9acef3",
+      "bytes": 168513
+    },
+    "docs/architecture/licenses/Archify-MIT.txt": {
+      "sha256": "b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706",
+      "bytes": 1102
+    },
+    "docs/architecture/licenses/JetBrainsMono-OFL.txt": {
+      "sha256": "c1ab7c666206842a02b35b30770dac0d7a10156ed401c9defc3f02a754d89e90",
+      "bytes": 4398
+    }
+  }
+}

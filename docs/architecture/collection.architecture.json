@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Verified collection: bytes before success",
+    "locale": "en",
+    "output": "docs/architecture/collection.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/wolffrichardj/verified-artifact-collection.git",
+      "revision": "7a59f67c2f4153adb6e2d52d182b0289e555ac0d",
+      "provider": "github",
+      "link_mode": "web"
+    },
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Local Python roles"
+        },
+        "database": {
+          "label": "Filesystem"
+        },
+        "external": {
+          "label": "CLI caller"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "cli",
+      "type": "external",
+      "label": "Direct CLI",
+      "sublabel": "sample.py scenarios",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        200,
+        70
+      ],
+      "sources": [
+        {
+          "path": "sample.py",
+          "line": 172,
+          "end_line": 209
+        }
+      ]
+    },
+    {
+      "id": "mock",
+      "type": "backend",
+      "label": "Optional mock adapter",
+      "sublabel": "Scope fields, in process",
+      "tag": "No MCP server or authentication",
+      "pos": [
+        40,
+        190
+      ],
+      "size": [
+        200,
+        78
+      ],
+      "sources": [
+        {
+          "path": "mock_mcp.py",
+          "line": 30,
+          "end_line": 52
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "Collection controller",
+      "sublabel": "Fixed request + exact fixture bytes",
+      "tag": "collect owns call ordering",
+      "pos": [
+        390,
+        40
+      ],
+      "size": [
+        235,
+        86
+      ],
+      "sources": [
+        {
+          "path": "sample.py",
+          "line": 83,
+          "end_line": 155
+        },
+        {
+          "path": "runtime.py",
+          "line": 23,
+          "end_line": 44
+        }
+      ]
+    },
+    {
+      "id": "sink",
+      "type": "backend",
+      "label": "FileSystemSink",
+      "sublabel": "No-clobber; post-link uncertainty",
+      "tag": "After publish: failure = uncertain",
+      "pos": [
+        825,
+        40
+      ],
+      "size": [
+        235,
+        86
+      ],
+      "sources": [
+        {
+          "path": "runtime.py",
+          "line": 54,
+          "end_line": 97
+        },
+        {
+          "path": "runtime.py",
+          "line": 104,
+          "end_line": 177
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "Trusted local directory",
+      "sublabel": "Trusted root; base + hash variants",
+      "tag": "Existing, user-owned root",
+      "pos": [
+        825,
+        340
+      ],
+      "size": [
+        235,
+        86
+      ],
+      "sources": [
+        {
+          "path": "runtime.py",
+          "line": 47,
+          "end_line": 77
+        },
+        {
+          "path": "runtime.py",
+          "line": 104,
+          "end_line": 166
+        }
+      ]
+    },
+    {
+      "id": "consumer",
+      "type": "backend",
+      "label": "Physical consumer check",
+      "sublabel": "Reopen; input-derived hash + size",
+      "tag": "Expected hash/size from input",
+      "pos": [
+        390,
+        340
+      ],
+      "size": [
+        235,
+        86
+      ],
+      "sources": [
+        {
+          "path": "sample.py",
+          "line": 158,
+          "end_line": 169
+        },
+        {
+          "path": "source_identity.py",
+          "line": 26,
+          "end_line": 52
+        },
+        {
+          "path": "mock_mcp.py",
+          "line": 45,
+          "end_line": 52
+        }
+      ]
+    },
+    {
+      "id": "accept",
+      "type": "backend",
+      "label": "Optional mock consumer",
+      "sublabel": "Envelope checks; no disk read",
+      "tag": "No disk read; no authentication",
+      "pos": [
+        40,
+        340
+      ],
+      "size": [
+        200,
+        86
+      ],
+      "sources": [
+        {
+          "path": "mock_mcp.py",
+          "line": 55,
+          "end_line": 83
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "direct",
+      "from": "cli",
+      "to": "core",
+      "label": "direct call"
+    },
+    {
+      "id": "optional",
+      "from": "mock",
+      "to": "core",
+      "label": "optional call"
+    },
+    {
+      "id": "land",
+      "from": "core",
+      "to": "sink",
+      "label": "land verified bytes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "result",
+      "from": "core",
+      "to": "consumer",
+      "label": "CollectionResult"
+    },
+    {
+      "id": "publish",
+      "from": "sink",
+      "to": "store",
+      "label": "link + readback",
+      "variant": "emphasis"
+    },
+    {
+      "id": "reopen",
+      "from": "consumer",
+      "to": "store",
+      "label": "reopen + hash"
+    },
+    {
+      "id": "payload",
+      "from": "consumer",
+      "to": "accept",
+      "label": "mock only"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Verify before landing",
+      "items": [
+        "Fixed request + exact generated fixture equality.",
+        "collect calls transport, verifier, then sink."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Retain bytes; expose uncertainty",
+      "items": [
+        "Same bytes: duplicate. Different base: hash variant.",
+        "Variant collision refuses. Post-publication failure: landing_uncertain."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Evidence has a trust boundary",
+      "items": [
+        "One Python process; synthetic attestations, no live provider.",
+        "Trusted root + collaborators; no hostile-mutation or future-integrity guarantee."
+      ]
+    }
+  ]
+}

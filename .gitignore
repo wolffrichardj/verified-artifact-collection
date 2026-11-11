@@ -1,3 +1,27 @@
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# Python environments and local caches
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local browser automation scratch files
+.playwright-cli/
+/output/playwright/
+
+# Machine-specific Archify receipts; public diagrams and manifests stay tracked
+*.delivery.json
+*.delivery-pending.json
+*.browser-check.json
+*.finalize.json
+*.finalize-summary.json

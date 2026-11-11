@@ -57,13 +57,13 @@ This reviewed video presents genuine recorded output from synthetic fixtures, wi
 
 ## Follow the code
 
-```mermaid
-flowchart LR
-  Request[Fixed synthetic request] --> Adapter[In-process mock adapter]
-  Adapter --> Acquire[Fake transport and exact verification]
-  Acquire --> Sink[No-clobber publication and final readback]
-  Sink --> Consumer[Separate consumer reopens and hashes the file]
-```
+[![Verified collection: control, bytes and evidence](docs/architecture/collection.png)](docs/architecture/README.md)
+
+The CLI and optional mock share the same collection core; success requires sink readback and separate physical verification. **Different bytes are retained; post-publication failures report `landing_uncertain`.**
+
+[Architecture decisions and source map](docs/architecture/README.md) · [Download interactive HTML](docs/architecture/collection.html) · [Editable diagram source](docs/architecture/collection.architecture.json)
+
+GitHub displays HTML source rather than running the viewer. Download the HTML file and open it locally; no server is needed.
 
 | Entry point | Decision to inspect |
 | --- | --- |
